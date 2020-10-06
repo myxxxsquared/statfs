@@ -1,0 +1,4 @@
+/.vscode/
+/result.csv
+__pycache__/
+*.pyc
