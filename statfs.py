@@ -48,8 +48,12 @@ def stat_all(root_folder, outputfile):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-r", "--root", default="/", required=False)
+    args = parser.parse_args()
+
     with open("result.csv", "wt", newline="") as fout:
-        stat_all("/", fout)
+        stat_all(args.root, fout)
 
 
 if __name__ == "__main__":
