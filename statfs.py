@@ -35,6 +35,8 @@ def stat_all(root_folder, outputfile):
                 stat_result.st_atime,
                 stat_result.st_mtime,
                 stat_result.st_ctime,
+                stat_result.st_blocks,
+                stat_result.st_blksize
             )
         )
 
