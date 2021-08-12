@@ -3,6 +3,8 @@ import csv
 import stat
 import sys
 import collections
+import pickle
+import gzip
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QApplication
 from PyQt5.QtGui import QFont, QFontDatabase
@@ -13,12 +15,16 @@ class TreeNode:
 
 
 def to_tree(input_file_name):
-    reader = iter(csv.reader(open(input_file_name)))
+    # reader = iter(csv.reader(open(input_file_name)))
+    reader = iter(pickle.load(gzip.open(input_file_name)))
     tree_nodes = {}
 
-    (fname, st_mode, _, _, _, _, _, st_size, _, _, _,) = next(reader)
+    (fname, st_mode, _, _, _, _, _, st_size, _, _, _, st_blocks, st_blksize) = next(
+        reader
+    )
     st_mode = int(st_mode)
     st_size = int(st_size)
+    st_size = 512 * int(st_blocks)
 
     node = TreeNode()
     fname = fname.rstrip("/") or fname
@@ -32,9 +38,24 @@ def to_tree(input_file_name):
 
     root_node = node
 
-    for (fname, st_mode, _, _, _, _, _, st_size, _, _, _,) in reader:
+    for (
+        fname,
+        st_mode,
+        _,
+        _,
+        _,
+        _,
+        _,
+        st_size,
+        _,
+        _,
+        _,
+        st_blocks,
+        st_blksize,
+    ) in reader:
         st_mode = int(st_mode)
         st_size = int(st_size)
+        st_size = 512 * int(st_blocks)
         folder_name, file_name = os.path.split(fname)
         node = TreeNode()
         node.name = file_name
@@ -66,7 +87,7 @@ def to_human_str(size):
 
 
 def main():
-    root_node = to_tree("result.csv")
+    root_node = to_tree("result.pkl.gz")
 
     def sort_children(n):
         n.children = sorted(n.children, key=lambda x: x.size, reverse=True)
